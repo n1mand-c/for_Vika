@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приглашение 💖</title>
+
+    <!-- ========================================================================= -->
+    <!-- ВСТАВЬ СВОЙ URL ОТ GOOGLE APPS SCRIPT ПРЯМО СЮДА ВНИЗУ:                   -->
+    <!-- ========================================================================= -->
+    <script>
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzAln3UwpXgYpPAFFGQc3vbaQQT1L_8zq1fXP-cYnrisIQqSqzpv7OV_sdfgzuVbRubzw/exec';
+    </script>
+    <!-- ========================================================================= -->
+    <style>
+        :root {
+            --bg-color: #FFF0F3;
+            --card-bg: #FFFFFF;
+            --accent-color: #FF4D6D;
+            --accent-hover: #e03c5a;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --btn-no-bg: #f3f4f6;
+            --btn-no-text: #4b5563;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+            /* Чтобы разлетающиеся сердечки или кнопки не вызывали скролл */
+            color: var(--text-main);
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            height: 550px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step {
+            position: absolute;
+            width: 100%;
+            background-color: var(--card-bg);
+            padding: 40px 24px;
+            border-radius: 28px;
+            box-shadow: 0 10px 40px rgba(255, 77, 109, 0.15);
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step.active {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .icon {
+            font-size: 54px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-color);
+            line-height: 1.3;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 100px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            width: 100%;
+            max-width: 280px;
+            box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 77, 109, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Шаг 2 */
+        .buttons-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            align-items: center;
+            position: relative;
+            min-height: 140px;
+            margin-top: 10px;
+        }
+
+        #btn-yes {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+        }
+
+        #btn-no {
+            background-color: var(--btn-no-bg);
+            color: var(--btn-no-text);
+            box-shadow: none;
+            position: relative;
+            transition: transform 0.3s ease, top 0.3s ease, left 0.3s ease, font-size 0.3s ease, padding 0.3s ease;
+            z-index: 10;
+        }
+
+        #btn-no:hover {
+            background-color: #e5e7eb;
+            transform: translateY(0);
+        }
+
+        /* Шаг 4 */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .option-card {
+            background-color: #fafafa;
+            border: 2px solid #f0f0f0;
+            padding: 16px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .option-card:hover {
+            border-color: var(--accent-color);
+            background-color: #FFF0F3;
+            transform: translateX(5px);
+        }
+
+        .option-icon {
+            font-size: 28px;
+        }
+
+        /* Шаг 5 */
+        .summary-box {
+            background-color: #FFF0F3;
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            color: var(--text-main);
+            font-family: inherit;
+        }
+        
+        .input-field:focus {
+            border-color: var(--accent-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Библиотека для конфетти -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <div class="container">
+
+        <!-- Шаг 1: Приветствие -->
+        <div class="step active" id="step-1">
+            <div class="icon">✨</div>
+            <h1>Привет!</h1>
+            <p>Я давно хотел тебе кое-что сказать, но немного стеснялся...</p>
+            <button class="btn" style="margin-top: 15px;" onclick="nextStep(1, 2)">Что именно? 💖</button>
+        </div>
+
+        <!-- Шаг 2: Главный вопрос -->
+        <div class="step" id="step-2">
+            <div class="icon">🥺</div>
+            <h1>Может пойдём на свидание?</h1>
+            <p>Обещаю вкусняшки и классную атмосферу 🍫</p>
+
+            <div class="buttons-wrapper">
+                <button class="btn" id="btn-yes" onclick="acceptDate()">Да! 💖</button>
+                <button class="btn" id="btn-no" onclick="dodgeNo()">Подумаю...</button>
+            </div>
+        </div>
+
+        <!-- Шаг 3: Радость -->
+        <div class="step" id="step-3">
+            <div class="icon">🎉</div>
+            <h1>УРАААА! ❤️</h1>
+            <p>Ты только что сделал(а) меня самым счастливым человеком! 🥰</p>
+            <button class="btn" onclick="nextStep(3, 4)" style="margin-top: 25px;">Давай спланируем 👉</button>
+        </div>
+
+        <!-- Шаг 4: Выбор типа свидания -->
+        <div class="step" id="step-4">
+            <div class="icon">📅</div>
+            <h1>Какое свидание выберем?</h1>
+
+            <div class="options-grid">
+                <div class="option-card" onclick="selectDate('☕', 'Уютная кофейня')">
+                    <span class="option-icon">☕</span>
+                    <span>Уютная кофейня</span>
+                </div>
+                <div class="option-card" onclick="selectDate('🎬', 'Кино')">
+                    <span class="option-icon">🎬</span>
+                    <span>Кино</span>
+                </div>
+                <div class="option-card" onclick="selectDate('🎨', 'Выставка или музей')">
+                    <span class="option-icon">🎨</span>
+                    <span>Выставка или музей</span>
+                </div>
+                <div class="option-card" onclick="selectDate('🌳', 'Прогулка в парке или на море')">
+                    <span class="option-icon">🌳</span>
+                    <span>Прогулка в парке или на море</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Шаг 5: Выбор даты и времени -->
+        <div class="step" id="step-5">
+            <div class="icon">⏰</div>
+            <h1>Когда тебе удобно?</h1>
+            
+            <div style="width: 100%; display: flex; flex-direction: column; gap: 15px; margin-top: 10px;">
+                <input type="date" id="date-picker" class="input-field">
+                <input type="time" id="time-picker" class="input-field">
+                <button class="btn" onclick="confirmDateTime()" style="margin-top: 10px;">Подтвердить ✅</button>
+            </div>
+        </div>
+
+        <!-- Шаг 6: Итог (Экран успеха) -->
+        <div class="step" id="step-6">
+            <div class="icon"
+                style="color: #4CAF50; animation: none; font-size: 72px; text-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);">
+                ✅</div>
+            <h1>Идеально! ✨</h1>
+            
+            <div class="summary-box" id="summary-text" style="flex-direction: column;">
+                <!-- Выбор появится здесь -->
+            </div>
+            
+            <p>Скоро реализуем! Уже считаю минуты до свидания 🥰</p>
+        </div>
+
+    </div>
+
+    <script>
+        let yesScale = 1;
+        const noTexts = [
+            "Точно?",
+            "Подумай еще разок!",
+            "Без шансов, жми Да!",
+            "Может всё-таки Да?",
+            "Уверена?",
+            "Ну пожалуйста 🥺",
+            "Нажми верхнюю кнопку!"
+        ];
+        let noClickCount = 0;
+
+        function nextStep(current, next) {
+            document.getElementById(`step-${current}`).classList.remove('active');
+            document.getElementById(`step-${next}`).classList.add('active');
+        }
+
+        function dodgeNo() {
+            const btnNo = document.getElementById('btn-no');
+            const btnYes = document.getElementById('btn-yes');
+            const wrapper = document.querySelector('.buttons-wrapper');
+
+            // Увеличиваем кнопку "Да"
+            yesScale += 0.25;
+            btnYes.style.transform = `scale(${yesScale})`;
+
+            // Меняем текст кнопки "Нет"
+            btnNo.innerText = noTexts[noClickCount % noTexts.length];
+            noClickCount++;
+
+            // Рандомно перемещаем кнопку "Нет"
+            // Чтобы кнопка не улетала за экран, берем небольшие значения
+            const randomX = (Math.random() - 0.5) * 180;
+            const randomY = (Math.random() - 0.5) * 120;
+
+            btnNo.style.position = 'absolute';
+            btnNo.style.transform = `translate(${randomX}px, ${randomY}px) scale(0.9)`;
+            btnNo.style.fontSize = '14px';
+        }
+
+        function acceptDate() {
+            // Запускаем конфетти
+            confetti({
+                particleCount: 200,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#FF4D6D', '#ff8fa3', '#fff0f3', '#ffb3c1']
+            });
+
+            nextStep(2, 3);
+
+            // Автоматический переход через 2.5 секунды, если не нажали кнопку
+            setTimeout(() => {
+                if (document.getElementById('step-3').classList.contains('active')) {
+                    nextStep(3, 4);
+                }
+            }, 2500);
+        }
+
+        let selectedActivityEmoji = '';
+        let selectedActivityText = '';
+
+        function selectDate(emoji, text) {
+            selectedActivityEmoji = emoji;
+            selectedActivityText = text;
+            
+            // Переходим к выбору даты и времени (Шаг 5)
+            nextStep(4, 5);
+        }
+
+        function confirmDateTime() {
+            const datePicker = document.getElementById('date-picker').value;
+            const timePicker = document.getElementById('time-picker').value;
+
+            if (!datePicker || !timePicker) {
+                alert("Пожалуйста, выбери дату и время 🥺");
+                return;
+            }
+
+            // Форматируем для отображения
+            const selectedDateStr = new Date(datePicker).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
+            
+            const summaryBox = document.getElementById('summary-text');
+            summaryBox.innerHTML = `
+                <div><span>${selectedActivityEmoji}</span> <span>${selectedActivityText}</span></div>
+                <div style="font-size: 16px; margin-top: 5px; color: #666;">🗓 ${selectedDateStr} в ${timePicker}</div>
+            `;
+            
+            // Отправляем данные в Google Таблицу
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'ТВОЙ_URL_ОТ_GOOGLE_APPS_SCRIPT_ЗДЕСЬ') {
+                const payload = {
+                    date: new Date().toLocaleString('ru-RU'),
+                    choice: `${selectedActivityText} (${selectedDateStr} в ${timePicker})`
+                };
+                
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error('Ошибка отправки:', err));
+            }
+
+            // Запускаем конфетти по краям для финального экрана
+            const duration = 2000;
+            const end = Date.now() + duration;
+            const colors = ['#FF4D6D', '#ffffff', '#ff8fa3'];
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            nextStep(5, 6);
+        }
+    </script>
+</body>
+
+</html>
